@@ -1,0 +1,12 @@
+apiVersion: compliance.openshift.io/v1alpha1
+kind: TailoredProfile
+metadata:
+  name: custom-profile
+  namespace: openshift-compliance
+spec:
+  description: My custom profile
+  enableRules:
+    - name: nist-ac6-pod-security
+      rationale: We really need to enable this
+      kind: CustomRule
+  title: Custom profile

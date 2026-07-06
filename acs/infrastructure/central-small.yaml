@@ -1,0 +1,41 @@
+apiVersion: platform.stackrox.io/v1alpha1
+kind: Central
+metadata:
+  name: stackrox-central-services
+  namespace: rhacs-operator
+spec:
+  central:
+    db:
+      resources:
+        requests:
+          cpu: 200m
+          memory: 1Gi
+    exposure:
+      route:
+        enabled: true
+    resources:
+      requests:
+        cpu: 200m
+        memory: 1Gi
+  scannerV4:
+    db:
+      resources:
+        requests:
+          cpu: 200m
+          memory: 512Mi
+    indexer:
+      resources:
+        requests:
+          cpu: 200m
+          memory: 512Mi
+  scanner:
+    analyzer:
+      resources:
+        requests:
+          cpu: 200m
+          memory: 512Mi
+    db:
+      resources:
+        requests:
+          cpu: 200m
+          memory: 512Mi

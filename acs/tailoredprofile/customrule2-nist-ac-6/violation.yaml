@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: nist-ac6-violation
+  labels:
+    type: workload
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-sem-runasnonroot
+  namespace: nist-ac6-violation
+  labels:
+    app: app-sem-runasnonroot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app-sem-runasnonroot
+  template:
+    metadata:
+      labels:
+        app: app-sem-runasnonroot
+    spec:
+      containers:
+        - name: app
+          image: registry.access.redhat.com/ubi9/ubi-minimal:latest
+          command:
+            - /bin/sh
+            - -c
+            - sleep 3600
+          securityContext:
+            allowPrivilegeEscalation: false

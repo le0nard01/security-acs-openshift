@@ -1,0 +1,44 @@
+apiVersion: observability.openshift.io/v1
+kind: ClusterLogForwarder
+metadata:
+  name: instance
+  namespace: openshift-logging
+spec:
+  filters:
+    # BLOCO DO FILTRO
+    - name: my-policy
+      type: kubeAPIAudit
+      kubeAPIAudit:
+        rules:
+          - level: RequestResponse
+            resources:
+            - group: ""
+              resources: ["pods/exec"]
+          - level: None
+    # FIM DO BLOCO DO FILTRO
+
+  managementState: Managed
+  outputs:
+    - lokiStack:
+        authentication:
+          token:
+            from: serviceAccount
+        target:
+          name: instance
+          namespace: openshift-logging
+      name: lokistack-out
+      tls:
+        ca:
+          configMapName: openshift-service-ca.crt
+          key: service-ca.crt
+      type: lokiStack
+  pipelines:
+    - filterRefs:
+        - my-policy # ADICIONAR O FILTRO NO PIPELINE DO COLLECTOR
+      inputRefs:
+        - audit
+      name: audit
+      outputRefs:
+        - lokistack-out
+  serviceAccount:
+    name: logging-collector

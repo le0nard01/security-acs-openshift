@@ -1,0 +1,81 @@
+apiVersion: compliance.openshift.io/v1alpha1
+kind: CustomRule
+metadata:
+  name: nist-ac6-pod-security
+  namespace: openshift-compliance
+  labels:
+    nist-control: "AC-6"
+    nist-family: "AccessControl"
+    security-control: "least-privilege"
+  annotations:
+    nist-control: "AC-6"
+    nist-requirement: "Garantir que workloads executem containers como usuario nao root"
+    compliance-framework: "NIST SP 800-53 Rev. 5"
+spec:
+  id: nist-ac6-pod-security
+  title: "NIST AC-6: Execucao de Pods como usuario nao root"
+  description: |
+    Verifica se todos os containers definidos em Deployments possuem
+    securityContext.runAsNonRoot configurado como true somente em namespaces
+    marcados com a label type=workload. Essa configuracao reduz o risco de
+    privilegios excessivos dentro dos containers e apoia o controle NIST AC-6,
+    relacionado ao principio do menor privilegio.
+  severity: high
+  checkType: Platform
+  scannerType: CEL
+  expression: |
+    deployments.items
+      .filter(d,
+        namespaces.items.exists(ns,
+          ns.metadata.name == d.metadata.namespace &&
+          has(ns.metadata.labels) &&
+          ns.metadata.labels.exists(label,
+            label == "type" &&
+            ns.metadata.labels[label] == "workload"
+          )
+        )
+      )
+      .all(d,
+        d.spec.template.spec.containers.all(c,
+          c.securityContext.runAsNonRoot == true
+        )
+      )
+  failureReason: |
+    Um ou mais Deployments em namespaces com a label type=workload possuem
+    containers sem securityContext.runAsNonRoot: true. Todos os containers
+    avaliados pela regra devem declarar explicitamente essa configuracao.
+  instructions: |
+    Para listar os namespaces avaliados pela regra:
+
+      oc get namespaces -l type=workload
+
+    Para verificar os Deployments que NAO atendem a regra CEL:
+
+      for ns in $(oc get namespaces -l type=workload -o jsonpath='{.items[*].metadata.name}'); do
+        oc get deployments -n "$ns" -o json | jq -r '
+          .items[]
+          | select(
+              [.spec.template.spec.containers[]
+               | select(.securityContext.runAsNonRoot != true)] | length > 0
+            )
+          | "\(.metadata.namespace)/\(.metadata.name)"
+        '
+      done
+
+    Exemplo de configuracao esperada no Deployment:
+      spec:
+        template:
+          spec:
+            containers:
+              - name: app
+                securityContext:
+                  runAsNonRoot: true
+  inputs:
+    - name: deployments
+      kubernetesInputSpec:
+        apiVersion: apps/v1
+        resource: deployments
+    - name: namespaces
+      kubernetesInputSpec:
+        apiVersion: v1
+        resource: namespaces
