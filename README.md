@@ -3,7 +3,7 @@
 - `acs/infrastructure/`: base ACS manifests used to deploy or size core ACS components, such as Central.
 - `loki-clf/infrastructure/`: base infrastructure manifests used by the logging examples.
 - `loki-clf/clf.yaml`: ClusterLogForwarder configuration for forwarding Kubernetes audit events.
-- `acs/tailoredprofile/`: Compliance Operator tailored profiles and custom rules.
+- `acs/tailoredprofile/`: Compliance Operator tailored profiles, custom rules, and sample workloads.
 - `acs/infrastructure/stackrox-mcp/`: Helm chart for deploying the StackRox MCP integration.
 
 ## Audit Log Forwarding
@@ -12,7 +12,7 @@
 
 ## Compliance Custom Rule
 
-`acs/tailoredprofile/customrule2-nist-ac-6/nist-ac-6-CR.yaml` defines a Compliance Operator `CustomRule` for NIST AC-6 least privilege validation.
+`acs/tailoredprofile/customrules/nist-ac-6-CR.yaml` defines a Compliance Operator `CustomRule` for NIST AC-6 least privilege validation.
 
 The rule checks Deployments only in namespaces labeled:
 
@@ -27,7 +27,11 @@ securityContext:
   runAsNonRoot: true
 ```
 
-The same folder also includes sample manifests:
+The `acs/tailoredprofile/violations/nist-ac-6-violations/` folder includes sample manifests:
 
 - `violation.yaml`: creates a workload that should fail the rule.
 - `no-violation.yaml`: creates a workload that should pass the rule.
+
+`acs/tailoredprofile/kustomization.yaml` includes only the `CustomRule` and `TailoredProfile`, so GitOps syncs do not apply the sample violation manifests.
+
+`applicationsets/tailoredprofile.yaml` creates an Argo CD `ApplicationSet` for the in-cluster OpenShift API and syncs the tailored profile resources to `openshift-compliance`.
