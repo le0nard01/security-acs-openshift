@@ -9,7 +9,7 @@ metadata:
     security-control: "least-privilege"
   annotations:
     nist-control: "AC-6"
-    nist-requirement: "Garantir que workloads executem containers como usuario nao root"
+    nist-requirement: "Garantir que workloads executem containers como usuario nao root."
     compliance-framework: "NIST SP 800-53 Rev. 5"
 spec:
   id: nist-ac6-pod-security
