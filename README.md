@@ -4,7 +4,7 @@
 - `loki-clf/infrastructure/`: base infrastructure manifests used by the logging examples.
 - `loki-clf/clf.yaml`: ClusterLogForwarder configuration for forwarding Kubernetes audit events.
 - `acs/tailoredprofile/`: Compliance Operator tailored profiles and custom rules.
-- `acs/stackrox-mcp/`: Helm chart for deploying the StackRox MCP integration.
+- `acs/infrastructure/stackrox-mcp/`: Helm chart for deploying the StackRox MCP integration.
 
 ## Audit Log Forwarding
 
