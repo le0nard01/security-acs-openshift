@@ -33,5 +33,3 @@ The `acs/tailoredprofile/violations/nist-ac-6-violations/` folder includes sampl
 - `no-violation.yaml`: creates a workload that should pass the rule.
 
 `acs/tailoredprofile/kustomization.yaml` includes only the `CustomRule` and `TailoredProfile`, so GitOps syncs do not apply the sample violation manifests.
-
-`applicationsets/tailoredprofile.yaml` creates an Argo CD `ApplicationSet` for the in-cluster OpenShift API and syncs the tailored profile resources to `openshift-compliance`.
